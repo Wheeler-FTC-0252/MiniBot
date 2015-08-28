@@ -16,19 +16,22 @@ public class MiniBotAutonomous extends OpMode{
     double rightSpeed;
     double sideDistance;
     double frontDistance;
-    double nominalDistance = 0.03;
-    double constantSpeed = 0.15;
+    double sideOffAmount=0.02;
+    double nominalDistance = 0.01;
+    double constantSpeed = 0.05;
+    double maxSpeed=0.75;
+    double minSpeed=0.03;
     OpticalDistanceSensor sideDistanceSensor;
     OpticalDistanceSensor frontDistanceSensor;
     public void init(){
-        leftMotor=hardwareMap.dcMotor.get("leftMotor");
-        rightMotor=hardwareMap.dcMotor.get("rightMotor");
+        leftMotor=hardwareMap.dcMotor.get("left");
+        rightMotor=hardwareMap.dcMotor.get("right");
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
-        sideDistanceSensor=hardwareMap.opticalDistanceSensor.get("sideDistance");
-        frontDistanceSensor=hardwareMap.opticalDistanceSensor.get("frontDistance");
+        sideDistanceSensor=hardwareMap.opticalDistanceSensor.get("side");
+        frontDistanceSensor=hardwareMap.opticalDistanceSensor.get("front");
     }
     public void loop(){
-        sideDistance=sideDistanceSensor.getLightDetected();
+        sideDistance=sideDistanceSensor.getLightDetected()-sideOffAmount;
         frontDistance=frontDistanceSensor.getLightDetected();
         telemetry.addData("Side",sideDistance);
         telemetry.addData("Front",frontDistance);
@@ -36,22 +39,24 @@ public class MiniBotAutonomous extends OpMode{
         rightFactor =1/leftFactor;
         leftSpeed=leftFactor*constantSpeed;
         rightSpeed=rightFactor*constantSpeed;
-        if (leftSpeed>1){
-            leftSpeed=1;
+        if (leftSpeed>maxSpeed){
+            leftSpeed=maxSpeed;
         }
-        else if (leftSpeed<-1){
-            leftSpeed=-1;
+        else if (leftSpeed<minSpeed){
+            leftSpeed=minSpeed;
         }
-        if (rightSpeed>1){
-            rightSpeed=1;
+        if (rightSpeed>maxSpeed){
+            rightSpeed=maxSpeed;
         }
-        else if (rightSpeed<-1){
-            rightSpeed=-1;
+        else if (rightSpeed<minSpeed){
+            rightSpeed=minSpeed;
         }
         leftMotor.setPower(leftSpeed);
         rightMotor.setPower(rightSpeed);
         telemetry.addData("Left: ", leftSpeed);
+        telemetry.addData("Left Factor: ", leftFactor);
         telemetry.addData("Right: ", rightSpeed);
+        telemetry.addData("Right Factor: ", rightFactor);
     }
 
 
